@@ -82,17 +82,17 @@ def register():
 
         if not all([name, email, password, confirm_password]):
             flash("All fields are required.", "error")
-            return render_template("register.html")
+            return render_template("register.html", form=request.form)
 
         if password != confirm_password:
             flash("Passwords do not match.", "error")
-            return render_template("register.html")
+            return render_template("register.html", form=request.form)
 
         try:
             create_user(name, email, password)
         except sqlite3.IntegrityError:
             flash("Email already registered.", "error")
-            return render_template("register.html")
+            return render_template("register.html", form=request.form)
 
         flash("Account created! Please sign in.", "success")
         return redirect(url_for("login"))
@@ -113,6 +113,7 @@ def login():
             flash("Invalid email or password.", "error")
             return render_template("login.html")
 
+        session.clear()
         session["user_id"] = user["id"]
         session["user_name"] = user["name"]
         return redirect(url_for("profile"))
